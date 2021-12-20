@@ -1,38 +1,37 @@
+console.clear();
 const express = require("express");
 const app = express();
 app.use(express.json()); // middleware
-
-// Express is basically an function
-
-const products = ["Laptop", "LCD", "Table", "Shirt", "Ball"];
-app.get("/", function (req, res) {
-  res.send("Hello World");
-});
-
-/*First parameter is url 
-Second is a function with 2 input
-first is request
-and second is response */
-app.get("/api/products", function (req, res) {
-  res.send(products);
-});
-app.get("/api/products/:index", function (req, res) {
-  if (!products[req.params.index])
-    return res.status(400).send("Product not found");
-  res.send(products[req.params.index]);
-});
-app.put("/api/products/:index", function (req, res) {
-  //   console.log(req.body);
-  products[req.params.index] = req.body.name;
-  res.send(products[req.params.index]);
-});
-app.delete("/api/products/:index", function (req, res) {
-  products.splice(req.params.index, 1);
-  res.send(products);
-});
-app.post("/api/products", function (req, res) {
-  products.push(req.body.name);
-  res.send(products);
-});
-
+// Express is basically a  function
+const mongoose = require("mongoose");
+const {
+  createProduct,
+  getAllProducts,
+  deleteProducts,
+  updateProduct,
+} = require("./productsOperations");
+// Connection Creation
+mongoose
+  .connect("mongodb://localhost/mernstack", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    console.log("Connection to MongoDB created");
+    // let product = await createProduct("HP", 21900, ["black", "spider"]);
+    // console.log(product);
+    // let AllProducts = await getAllProducts();
+    // console.log(AllProducts);
+    // console.log(await deleteProducts("61c097cf45badade7a13a52d"));
+    let updatedProduct = updateProduct(
+      "61c097e4da1d1d6b01346123",
+      "Lenovo Update",
+      900,
+      []
+    );
+  })
+  .catch((err) => {
+    console.log("Erro connecting");
+    console.log(err);
+  });
 app.listen(3000);
